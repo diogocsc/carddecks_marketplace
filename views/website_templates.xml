@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Add Buy CTA into deck detail page -->
+        <template id="deck_detail_marketplace_cta" inherit_id="subscription_plans.deck_detail_page" priority="25">
+            <xpath expr="//div[@class='card-footer']//div[1]" position="before">
+                <t t-if="deck.marketplace_is_available and not user._is_public() and user.id != deck.creator_user_id.id">
+                    <div class="mb-2">
+                        <a t-attf-href="/deck/#{deck.id}/buy" class="btn btn-primary btn-lg w-100">
+                            Buy this deck for
+                            <span t-esc="deck.marketplace_price"/> <span t-esc="deck.marketplace_currency_id.name"/>
+                        </a>
+                    </div>
+                </t>
+                <t t-if="deck.marketplace_is_available and user._is_public()">
+                    <div class="mb-2">
+                        <a href="/web/signup" class="btn btn-primary btn-lg w-100">
+                            Sign up to buy this deck
+                        </a>
+                    </div>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="buy_page" name="Buy Deck">
+            <t t-call="website.layout">
+                <link rel="stylesheet" type="text/css" href="/carddecks_marketplace/static/src/css/marketplace.css"/>
+                <div id="wrap" class="marketplace-buy">
+                    <div class="container mt-4 mb-5">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-7">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="mb-0">Buy deck</h2>
+                                    </div>
+                                    <div class="card-body">
+                                        <h4 class="mb-1" t-esc="deck.name"/>
+                                        <p class="text-muted" t-esc="deck.description"/>
+
+                                        <div class="alert alert-info">
+                                            Price:
+                                            <strong><span t-esc="deck.marketplace_price"/> <span t-esc="deck.marketplace_currency_id.name"/></strong>
+                                        </div>
+
+                                        <t t-if="not seller or seller.onboarding_state != 'complete'">
+                                            <div class="alert alert-warning">
+                                                Seller is not ready to accept payments yet.
+                                            </div>
+                                            <a t-attf-href="/deck/#{deck.id}" class="btn btn-outline-secondary">Back</a>
+                                        </t>
+                                        <t t-else="">
+                                            <div id="payment-status" class="alert" style="display:none;"></div>
+
+                                            <form id="marketplace-checkout"
+                                                  t-att-data-deck-id="deck.id">
+                                                <input type="hidden" id="stripe-publishable-key"
+                                                       t-att-value="request.env['stripe.payment'].sudo().get_stripe_config()['publishable_key']"/>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Cardholder Name</label>
+                                                    <input class="form-control" id="cardholder-name" placeholder="John Doe" required=""/>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Card details</label>
+                                                    <div id="card-element" class="stripe-element"></div>
+                                                </div>
+                                                <button type="submit" class="btn btn-success btn-lg w-100" id="pay-btn">
+                                                    Pay <span t-esc="deck.marketplace_price"/> <span t-esc="deck.marketplace_currency_id.name"/>
+                                                </button>
+                                            </form>
+
+                                            <div class="mt-3 d-flex justify-content-between">
+                                                <a t-attf-href="/deck/#{deck.id}" class="btn btn-outline-secondary">Cancel</a>
+                                                <a href="/seller/onboard" class="btn btn-link" t-if="user.id == deck.creator_user_id.id">Seller onboarding</a>
+                                            </div>
+
+                                            <script src="https://js.stripe.com/v3/"></script>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Portal dropdown entry -->
+        <template id="user_dropdown_seller_onboarding" inherit_id="portal.user_dropdown" priority="30">
+            <xpath expr="//div[@class='dropdown-divider']" position="before">
+                <a href="/seller/onboard" role="menuitem" class="dropdown-item ps-3">
+                    <i class="fa fa-fw fa-credit-card me-1 small text-muted"/> Seller Onboarding
+                </a>
+            </xpath>
+        </template>
+
+    </data>
+</odoo>
+

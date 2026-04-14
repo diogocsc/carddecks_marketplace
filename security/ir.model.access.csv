@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_marketplace_seller_user,marketplace seller user,model_carddecks_marketplace_seller,base.group_user,1,1,1,0
+access_marketplace_seller_portal,marketplace seller portal,model_carddecks_marketplace_seller,base.group_portal,1,1,1,0
+access_marketplace_purchase_user,marketplace purchase user,model_carddecks_marketplace_purchase,base.group_user,1,1,1,0
+access_marketplace_purchase_portal,marketplace purchase portal,model_carddecks_marketplace_purchase,base.group_portal,1,1,1,0
+access_marketplace_entitlement_user,marketplace entitlement user,model_carddecks_marketplace_entitlement,base.group_user,1,0,0,0
+access_marketplace_entitlement_portal,marketplace entitlement portal,model_carddecks_marketplace_entitlement,base.group_portal,1,0,0,0
+

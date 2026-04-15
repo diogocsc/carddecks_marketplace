@@ -69,6 +69,10 @@ class CardDeckDeckMarketplace(models.Model):
     def can_user_play(self, user=None):
         self.ensure_one()
         user = user or self.env.user
+        # Free/try-out decks should remain playable when access is granted.
+        # Only enforce approval gating for premium decks.
+        if getattr(self, "deck_type", None) in ("free", "try_out"):
+            return self.can_user_access(user)
         return self.can_user_access(user) and self.approval_status == "approved"
 
     @api.model
